@@ -1,0 +1,182 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Language Learning</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/css/bootstrap.min.css">
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        body {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            height: 100vh;
+            background-color: #f8f9fa;
+            font-family: Arial, sans-serif;
+        }
+
+        .card {
+            width: 300px;
+            height: 150px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+            margin-bottom: 20px;
+            background-color: #fff;
+            border: 1px solid #ddd;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+            border-radius: 10px;
+            transition: transform 0.3s, box-shadow 0.3s;
+        }
+
+        .card:hover {
+            transform: scale(1.05);
+            box-shadow: 0 12px 20px rgba(0, 0, 0, 0.3);
+        }
+
+        input.form-control {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+            border: 1px solid #ddd;
+        }
+
+        button {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            border-radius: 5px;
+        }
+
+        button:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-content {
+            border-radius: 10px;
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+
+        .modal-header {
+            background-color: #007bff;
+            color: #fff;
+            border-top-left-radius: 10px;
+            border-top-right-radius: 10px;
+        }
+
+        .modal-footer button {
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-footer button:hover {
+            box-shadow: 0 8px 15px rgba(0, 0, 0, 0.2);
+        }
+    </style>
+</head>
+<body>
+    <div class="card" id="wordCard">word</div>
+    <input type="text" class="form-control w-50" id="translationInput" placeholder="Enter translation here">
+    <button class="btn btn-primary mt-3" id="checkButton">Check</button>
+
+    <div class="mt-4">
+        <p>Step: <span id="step">1</span>/10</p>
+        <p>Correct: <span id="correct">0</span></p>
+        <p>Incorrect: <span id="incorrect">0</span></p>
+    </div>
+
+    <!-- Modal -->
+    <div class="modal fade" id="resultModal" tabindex="-1" aria-labelledby="resultModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="resultModalLabel">Your Language Level</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body" id="modalBody">
+                    <!-- Result will be displayed here -->
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // List of words to translate
+        const words = [
+            { word: "always", translation: "завжди" },
+            { word: "book", translation: "книга" },
+            { word: "house", translation: "дім" },
+            { word: "friend", translation: "друг" },
+            { word: "computer", translation: "комп'ютер" },
+            { word: "cat", translation: "кіт" },
+            { word: "dog", translation: "собака" },
+            { word: "city", translation: "місто" },
+            { word: "car", translation: "машина" },
+            { word: "school", translation: "школа" }
+        ];
+
+        let currentIndex = 0;
+        let correctCount = 0;
+        let incorrectCount = 0;
+
+        // Shuffle words randomly
+        const shuffledWords = words.sort(() => Math.random() - 0.5);
+
+        // Update the card with the current word
+        function updateCard() {
+            $("#wordCard").text(shuffledWords[currentIndex].word);
+            $("#step").text(currentIndex + 1);
+        }
+
+        // Check the translation
+        $("#checkButton").click(function () {
+            const userTranslation = $("#translationInput").val().trim().toLowerCase();
+            const correctTranslation = shuffledWords[currentIndex].translation.toLowerCase();
+
+            if (userTranslation === correctTranslation) {
+                correctCount++;
+                $("#correct").text(correctCount);
+            } else {
+                incorrectCount++;
+                $("#incorrect").text(incorrectCount);
+            }
+
+            // Clear input
+            $("#translationInput").val("");
+
+            // Move to the next word or show the result
+            currentIndex++;
+            if (currentIndex < shuffledWords.length) {
+                updateCard();
+            } else {
+                showResult();
+            }
+        });
+
+        // Show the result in a modal
+        function showResult() {
+            const totalWords = shuffledWords.length;
+            const percentage = Math.round((correctCount / totalWords) * 100);
+            let level = "";
+
+            if (percentage >= 80) {
+                level = "Excellent";
+            } else if (percentage >= 50) {
+                level = "Good";
+            } else {
+                level = "Needs Improvement";
+            }
+
+            $("#modalBody").text(`You translated ${correctCount} out of ${totalWords} words correctly (${percentage}%). Your level is: ${level}.`);
+            $("#resultModal").modal("show");
+        }
+
+        // Initialize the card
+        updateCard();
+    </script>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/bootstrap/5.3.0/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
